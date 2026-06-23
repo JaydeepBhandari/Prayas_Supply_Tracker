@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Animal Shelter Supply Tracker — log and manage food, medicine, and supplies for shelter cages.">
+<title>Prayas — Animal Shelter Supply Tracker</title>
+<style>
+/* ── Reset & Base ─────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f5f7;
+  --card:#ffffff;
+  --border:#e2e4e9;
+  --text:#1e1e2f;
+  --text-dim:#6b7280;
+  --accent:#4f6ef7;
+  --accent-hover:#3b57d9;
+  --accent-light:rgba(79,110,247,.08);
+  --green:#16a34a;--green-bg:#ecfdf5;--green-border:#bbf7d0;
+  --blue:#2563eb;--blue-bg:#eff6ff;--blue-border:#bfdbfe;
+  --purple:#7c3aed;--purple-bg:#f5f3ff;--purple-border:#ddd6fe;
+  --gray:#6b7280;--gray-bg:#f3f4f6;--gray-border:#e5e7eb;
+  --red:#dc2626;--red-bg:#fef2f2;--red-border:#fecaca;
+  --radius:12px;
+  --radius-sm:8px;
+  --shadow:0 1px 3px rgba(0,0,0,.05),0 1px 2px rgba(0,0,0,.03);
+  --shadow-md:0 4px 16px rgba(0,0,0,.08);
+  --shadow-lg:0 8px 30px rgba(0,0,0,.1);
+  --font:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --transition:all .22s cubic-bezier(.4,0,.2,1);
+}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+
+/* ── Scrollbar ────────────────────────────────────────── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:#9ca3af}
+
+/* ── Layout ───────────────────────────────────────────── */
+.app-header{
+  background:var(--card);border-bottom:1px solid var(--border);
+  padding:0 32px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;height:56px;
+  backdrop-filter:blur(8px);background:rgba(255,255,255,.92);
+}
+.app-header h1{
+  font-size:1.2rem;font-weight:800;letter-spacing:-.4px;color:var(--accent);
+  display:flex;align-items:center;gap:8px;
+}
+.app-header h1 span{
+  font-weight:400;color:var(--text-dim);font-size:.82rem;
+  padding-left:8px;border-left:1px solid var(--border);
+}
+
+.month-selector{display:flex;align-items:center;gap:10px}
+.month-selector label{font-size:.78rem;color:var(--text-dim);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.month-selector select{
+  padding:7px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);
+  font-size:.85rem;background:var(--card);color:var(--text);cursor:pointer;
+  transition:var(--transition);font-weight:500;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+  padding-right:30px;
+}
+.month-selector select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,110,247,.12)}
+
+.tab-bar{
+  display:flex;gap:0;padding:0 32px;background:var(--card);
+  border-bottom:1px solid var(--border);
+}
+.tab-btn{
+  padding:13px 22px;font-size:.84rem;font-weight:600;
+  border:none;background:transparent;color:var(--text-dim);
+  cursor:pointer;position:relative;transition:var(--transition);
+  border-bottom:2.5px solid transparent;letter-spacing:-.1px;
+}
+.tab-btn:hover{color:var(--text);background:var(--accent-light)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+.main{max-width:1120px;margin:0 auto;padding:28px 32px 80px}
+
+/* ── Cards & Panels ───────────────────────────────────── */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:24px 26px;
+  box-shadow:var(--shadow);transition:var(--transition);
+}
+.card:hover{box-shadow:var(--shadow-md)}
+
+.section-title{
+  font-size:1rem;font-weight:700;margin-bottom:18px;letter-spacing:-.2px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-title .icon{
+  width:28px;height:28px;border-radius:var(--radius-sm);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:.9rem;
+}
+
+/* ── Metric Cards ─────────────────────────────────────── */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.metric-card{text-align:center;padding:22px 14px;position:relative;overflow:hidden}
+.metric-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  border-radius:var(--radius) var(--radius) 0 0;
+}
+.metric-card:nth-child(1)::before{background:var(--accent)}
+.metric-card:nth-child(2)::before{background:var(--green)}
+.metric-card:nth-child(3)::before{background:var(--purple)}
+.metric-card:nth-child(4)::before{background:#f59e0b}
+.metric-card .value{font-size:2rem;font-weight:800;line-height:1.1}
+.metric-card:nth-child(1) .value{color:var(--accent)}
+.metric-card:nth-child(2) .value{color:var(--green)}
+.metric-card:nth-child(3) .value{color:var(--purple)}
+.metric-card:nth-child(4) .value{color:#d97706}
+.metric-card .label{
+  font-size:.72rem;color:var(--text-dim);margin-top:6px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.6px;
+}
+
+/* ── Cage Cards Grid ──────────────────────────────────── */
+.cage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.cage-card{padding:20px 22px;position:relative;overflow:hidden}
+.cage-card::after{
+  content:'';position:absolute;top:0;right:0;width:60px;height:60px;
+  border-radius:0 0 0 60px;opacity:.06;
+}
+.cage-card .cage-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.cage-card .cage-name{font-weight:700;font-size:1rem;letter-spacing:-.2px}
+.cage-card .animal-badge{
+  font-size:.7rem;font-weight:700;padding:4px 11px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.animal-dog{background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd}
+.animal-cat{background:#fce7f3;color:#be185d;border:1px solid #f9a8d4}
+.animal-bird{background:#fef3c7;color:#92400e;border:1px solid #fcd34d}
+.animal-default{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)}
+
+.cage-card .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.cage-card .stat-item{
+  background:var(--bg);border-radius:var(--radius-sm);padding:8px 10px;text-align:center;
+}
+.cage-card .stat-item .stat-val{font-size:1.1rem;font-weight:700;color:var(--text);line-height:1.2}
+.cage-card .stat-item .stat-lbl{font-size:.68rem;color:var(--text-dim);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.cage-card .item-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+
+.progress-track{
+  height:6px;background:#eef0f4;border-radius:20px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;border-radius:20px;
+  background:linear-gradient(90deg,var(--accent),#818cf8);
+  transition:width .6s cubic-bezier(.4,0,.2,1);
+}
+.progress-label{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:4px;
+}
+.progress-label span{font-size:.7rem;color:var(--text-dim);font-weight:500}
+
+/* ── Badges ───────────────────────────────────────────── */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:.68rem;font-weight:700;padding:3px 10px;
+  border-radius:20px;letter-spacing:.4px;text-transform:uppercase;
+}
+.badge-food{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.badge-medicine{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)}
+.badge-water{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border)}
+.badge-other{background:var(--gray-bg);color:var(--gray);border:1px solid var(--gray-border)}
+
+/* Badge dots */
+.badge::before{content:'';width:5px;height:5px;border-radius:50%}
+.badge-food::before{background:var(--green)}
+.badge-medicine::before{background:var(--blue)}
+.badge-water::before{background:var(--purple)}
+.badge-other::before{background:var(--gray)}
+
+/* ── Forms ────────────────────────────────────────────── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:1/-1}
+.form-group label{
+  font-size:.78rem;font-weight:600;color:var(--text-dim);
+  text-transform:uppercase;letter-spacing:.4px;
+}
+.form-group input,.form-group select,.form-group textarea{
+  padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);
+  font-size:.88rem;font-family:var(--font);color:var(--text);
+  background:var(--card);transition:var(--transition);
+}
+.form-group input:hover,.form-group select:hover,.form-group textarea:hover{
+  border-color:#c7cad1;
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{
+  outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,110,247,.1);
+}
+.form-group textarea{resize:vertical;min-height:72px}
+.form-group select{
+  appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  padding-right:32px;
+}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 22px;font-size:.84rem;font-weight:600;
+  border:none;border-radius:var(--radius-sm);cursor:pointer;
+  transition:var(--transition);font-family:var(--font);
+  position:relative;overflow:hidden;
+}
+.btn::after{
+  content:'';position:absolute;inset:0;
+  background:rgba(255,255,255,.1);opacity:0;transition:opacity .2s;
+}
+.btn:hover::after{opacity:1}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-hover);box-shadow:0 4px 12px rgba(79,110,247,.3)}
+.btn-outline{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.btn-outline:hover{background:var(--accent);color:#fff}
+.btn-danger-sm{
+  background:transparent;color:var(--red);border:1px solid var(--red-border);
+  font-size:.76rem;padding:5px 12px;border-radius:6px;
+}
+.btn-danger-sm:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.btn-edit-sm{
+  background:transparent;color:var(--accent);border:1px solid var(--accent);
+  font-size:.76rem;padding:5px 12px;border-radius:6px;
+}
+.btn-edit-sm:hover{background:var(--accent);color:#fff}
+.btn-save-sm{
+  background:transparent;color:var(--green);border:1px solid var(--green-border);
+  font-size:.76rem;padding:5px 10px;border-radius:6px;
+}
+.btn-save-sm:hover{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-cancel-sm{
+  background:transparent;color:var(--gray);border:1px solid var(--gray-border);
+  font-size:.76rem;padding:5px 10px;border-radius:6px;
+}
+.btn-cancel-sm:hover{background:var(--gray);color:#fff;border-color:var(--gray)}
+.cage-edit-input{
+  padding:5px 9px;border:1.5px solid var(--accent);border-radius:6px;
+  font-size:.84rem;font-family:var(--font);color:var(--text);
+  width:100%;max-width:140px;background:var(--accent-light);
+  transition:var(--transition);
+}
+.cage-edit-input:focus{outline:none;box-shadow:0 0 0 3px rgba(79,110,247,.12)}
+.cage-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:nowrap}
+.btn-export{background:#059669;color:#fff}
+.btn-export:hover{background:#047857;box-shadow:0 4px 12px rgba(5,150,105,.3)}
+
+/* ── Table ────────────────────────────────────────────── */
+.table-wrap{overflow-x:auto;margin-top:14px;border-radius:var(--radius-sm);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+thead th{
+  text-align:left;padding:11px 14px;font-weight:700;font-size:.72rem;
+  color:var(--text-dim);text-transform:uppercase;letter-spacing:.6px;
+  border-bottom:1px solid var(--border);background:#fafbfc;
+}
+thead th:first-child{border-radius:var(--radius-sm) 0 0 0}
+thead th:last-child{border-radius:0 var(--radius-sm) 0 0}
+tbody td{padding:11px 14px;border-bottom:1px solid #f3f4f6;vertical-align:middle}
+tbody tr{transition:background .15s ease}
+tbody tr:hover{background:#f8f9fb}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:last-child td:first-child{border-radius:0 0 0 var(--radius-sm)}
+tbody tr:last-child td:last-child{border-radius:0 0 var(--radius-sm) 0}
+.empty-msg{text-align:center;color:var(--text-dim);padding:48px 20px;font-size:.9rem}
+
+/* ── Toast ────────────────────────────────────────────── */
+.toast{
+  position:fixed;bottom:28px;right:28px;
+  background:#065f46;color:#fff;padding:13px 24px;
+  border-radius:var(--radius-sm);font-size:.86rem;font-weight:500;
+  box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:8px;
+  transform:translateY(120px);opacity:0;
+  transition:all .4s cubic-bezier(.4,0,.2,1);z-index:999;
+  max-width:360px;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{background:#991b1b}
+
+/* ── Confirm Modal ────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.35);
+  backdrop-filter:blur(3px);z-index:200;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s ease;
+}
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal-box{
+  background:var(--card);border-radius:var(--radius);
+  padding:28px 30px;max-width:400px;width:90%;
+  box-shadow:var(--shadow-lg);
+  transform:scale(.92);transition:transform .25s cubic-bezier(.4,0,.2,1);
+}
+.modal-overlay.show .modal-box{transform:scale(1)}
+.modal-box h3{font-size:1rem;font-weight:700;margin-bottom:8px}
+.modal-box p{font-size:.88rem;color:var(--text-dim);margin-bottom:20px;line-height:1.5}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+.modal-actions .btn{min-width:90px}
+
+/* ── Filters Row ──────────────────────────────────────── */
+.filter-row{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:16px}
+.filter-row .form-group{gap:5px}
+.filter-row select{padding:8px 14px;font-size:.84rem}
+
+/* ── Tab Panels ───────────────────────────────────────── */
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:fadeIn .3s cubic-bezier(.4,0,.2,1)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Success animation on log form ────────────────────── */
+.success-flash{animation:successPulse .5s ease}
+@keyframes successPulse{
+  0%{box-shadow:0 0 0 0 rgba(22,163,74,.3)}
+  50%{box-shadow:0 0 0 8px rgba(22,163,74,.08)}
+  100%{box-shadow:var(--shadow)}
+}
+
+/* ── Empty state ──────────────────────────────────────── */
+.empty-state{
+  text-align:center;padding:50px 24px;
+}
+.empty-state .empty-icon{font-size:2.5rem;margin-bottom:10px;opacity:.4}
+.empty-state .empty-text{color:var(--text-dim);font-size:.88rem}
+
+/* ── Cage table animal pill ───────────────────────────── */
+.animal-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:.74rem;font-weight:600;padding:3px 10px;
+  border-radius:20px;
+}
+
+/* ── History date formatting ──────────────────────────── */
+.date-cell{font-variant-numeric:tabular-nums;font-weight:500;white-space:nowrap}
+.cage-cell{font-weight:600}
+.notes-cell{
+  max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  color:var(--text-dim);font-style:italic;
+}
+.qty-cell{font-weight:600;font-variant-numeric:tabular-nums}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media(max-width:768px){
+  .metrics{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .app-header{flex-direction:column;gap:10px;padding:12px 16px;height:auto}
+  .tab-bar{padding:0 12px;overflow-x:auto}
+  .tab-btn{padding:11px 16px;white-space:nowrap;font-size:.8rem}
+  .main{padding:16px}
+  .form-grid{grid-template-columns:1fr}
+  .metrics{grid-template-columns:1fr 1fr}
+  .cage-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────── -->
+<header class="app-header">
+  <h1>🐾 Prayas <span>Supply Tracker</span></h1>
+  <div class="month-selector">
+    <label for="globalMonth">Viewing</label>
+    <select id="globalMonth"></select>
+  </div>
+</header>
+
+<!-- ── Tab Bar ─────────────────────────────────────────── -->
+<nav class="tab-bar" role="tablist">
+  <button class="tab-btn active" data-tab="dashboard" id="tab-dashboard">📊 Dashboard</button>
+  <button class="tab-btn" data-tab="log" id="tab-log">📝 Log Supply</button>
+  <button class="tab-btn" data-tab="history" id="tab-history">📋 History</button>
+  <button class="tab-btn" data-tab="cages" id="tab-cages">🏠 Manage Cages</button>
+</nav>
+
+<!-- ── Main Content ───────────────────────────────────── -->
+<main class="main">
+
+  <!-- Dashboard -->
+  <section class="tab-panel active" id="panel-dashboard">
+    <div class="metrics" id="metricsRow"></div>
+    <h2 class="section-title">Cage Overview</h2>
+    <div class="cage-grid" id="cageGrid"></div>
+  </section>
+
+  <!-- Log Supply -->
+  <section class="tab-panel" id="panel-log">
+    <div class="card" id="logCard" style="max-width:660px">
+      <h2 class="section-title">Log a Supply Entry</h2>
+      <form id="logForm" class="form-grid">
+        <div class="form-group">
+          <label for="logCage">Cage</label>
+          <select id="logCage" required></select>
+        </div>
+        <div class="form-group">
+          <label for="logItemType">Item Type</label>
+          <select id="logItemType" required>
+            <option value="Food">🍖 Food</option>
+            <option value="Medicine">💊 Medicine</option>
+            <option value="Water">💧 Water</option>
+            <option value="Other">📦 Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="logItemName">Item Name</label>
+          <input type="text" id="logItemName" placeholder="e.g. Pedigree Chicken" required>
+        </div>
+        <div class="form-group">
+          <label for="logQty">Quantity</label>
+          <input type="number" id="logQty" min="0.01" step="0.01" placeholder="0" required>
+        </div>
+        <div class="form-group">
+          <label for="logUnit">Unit</label>
+          <select id="logUnit" required>
+            <option value="kg">kg</option>
+            <option value="g">g</option>
+            <option value="L">L</option>
+            <option value="ml">ml</option>
+            <option value="tablets">tablets</option>
+            <option value="pieces">pieces</option>
+            <option value="packets">packets</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="logDate">Date</label>
+          <input type="date" id="logDate" required>
+        </div>
+        <div class="form-group full">
+          <label for="logNotes">Notes <span style="font-weight:400;color:#b0b5bf;text-transform:none;letter-spacing:0">(optional)</span></label>
+          <textarea id="logNotes" placeholder="Any additional details…"></textarea>
+        </div>
+        <div class="form-group full" style="flex-direction:row">
+          <button type="submit" class="btn btn-primary">✓ Save Entry</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- History -->
+  <section class="tab-panel" id="panel-history">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:6px">
+        <h2 class="section-title" style="margin-bottom:0">Supply History</h2>
+        <button class="btn btn-export" id="btnExport">⬇ Export CSV</button>
+      </div>
+      <div class="filter-row">
+        <div class="form-group">
+          <label for="filterCage">Cage</label>
+          <select id="filterCage"><option value="">All Cages</option></select>
+        </div>
+        <div class="form-group">
+          <label for="filterType">Item Type</label>
+          <select id="filterType">
+            <option value="">All Types</option>
+            <option value="Food">Food</option>
+            <option value="Medicine">Medicine</option>
+            <option value="Water">Water</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th><th>Cage</th><th>Animal</th><th>Item Type</th>
+              <th>Item Name</th><th>Qty</th><th>Unit</th><th>Notes</th><th style="width:50px"></th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Manage Cages -->
+  <section class="tab-panel" id="panel-cages">
+    <div class="card" style="max-width:580px;margin-bottom:20px">
+      <h2 class="section-title">Add New Cage</h2>
+      <form id="cageForm" class="form-grid" style="grid-template-columns:1fr 1fr auto;align-items:end">
+        <div class="form-group">
+          <label for="cageName">Cage Name</label>
+          <input type="text" id="cageName" placeholder="e.g. Cage E" required>
+        </div>
+        <div class="form-group">
+          <label for="cageAnimal">Animal Type</label>
+          <input type="text" id="cageAnimal" placeholder="e.g. Rabbit" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="height:40px">+ Add</button>
+      </form>
+    </div>
+    <div class="card">
+      <h2 class="section-title">All Cages</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Cage Name</th><th>Animal Type</th><th>Entries</th><th style="width:140px"></th></tr></thead>
+          <tbody id="cageTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Confirm Modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <h3 id="modalTitle">Confirm</h3>
+    <p id="modalMessage">Are you sure?</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="modalCancel">Cancel</button>
+      <button class="btn btn-primary" id="modalConfirm" style="background:var(--red)">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   DATA LAYER
+   ================================================================ */
+let nextCageId = 1;
+let nextLogId = 1;
+
+let cages = [];
+let logs = [];
+let selectedMonth = ''; // "YYYY-MM"
+
+// Helpers
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const pad = n => String(n).padStart(2,'0');
+const today = () => {const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};
+
+function monthKey(dateStr){ return dateStr.slice(0,7) }
+
+function addCage(name, animal){
+  const cage = { id: nextCageId++, name, animal };
+  cages.push(cage);
+  return cage;
+}
+
+function removeCage(id){
+  cages = cages.filter(c=>c.id!==id);
+  logs = logs.filter(l=>l.cageId!==id);
+}
+
+function addLog(entry){
+  entry.id = nextLogId++;
+  logs.push(entry);
+  return entry;
+}
+
+function removeLog(id){
+  logs = logs.filter(l=>l.id!==id);
+}
+
+function logsForMonth(month){
+  return logs.filter(l=>monthKey(l.date)===month);
+}
+
+function cageById(id){ return cages.find(c=>c.id===id) }
+
+/* ================================================================
+   CUSTOM CONFIRM MODAL (replaces window.confirm)
+   ================================================================ */
+function showConfirm(title, message, onConfirm){
+  const overlay = $('#confirmModal');
+  $('#modalTitle').textContent = title;
+  $('#modalMessage').textContent = message;
+  overlay.classList.add('show');
+
+  // Clean up old listeners
+  const confirmBtn = $('#modalConfirm');
+  const cancelBtn = $('#modalCancel');
+  const newConfirm = confirmBtn.cloneNode(true);
+  const newCancel = cancelBtn.cloneNode(true);
+  confirmBtn.replaceWith(newConfirm);
+  cancelBtn.replaceWith(newCancel);
+
+  function close(){ overlay.classList.remove('show') }
+
+  newCancel.addEventListener('click', close);
+  newConfirm.addEventListener('click', ()=>{ close(); onConfirm(); });
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); }, {once:true});
+}
+
+/* ================================================================
+   SEED DATA
+   ================================================================ */
+function seedData(){
+  const c1 = addCage('Cage A','Dog');
+  const c2 = addCage('Cage B','Cat');
+  const c3 = addCage('Cage C','Dog');
+  const c4 = addCage('Cage D','Bird');
+
+  const now = new Date();
+  const y = now.getFullYear(), m = now.getMonth()+1;
+  const d = (day)=>`${y}-${pad(m)}-${pad(day)}`;
+
+  addLog({cageId:c1.id,itemType:'Food',itemName:'Pedigree Chicken',qty:2,unit:'kg',date:d(1),notes:'Morning feed'});
+  addLog({cageId:c1.id,itemType:'Medicine',itemName:'Deworming tablet',qty:1,unit:'tablets',date:d(3),notes:''});
+  addLog({cageId:c2.id,itemType:'Food',itemName:'Whiskas Tuna',qty:1.5,unit:'kg',date:d(2),notes:'Evening feed'});
+  addLog({cageId:c2.id,itemType:'Water',itemName:'Fresh water refill',qty:3,unit:'L',date:d(4),notes:''});
+  addLog({cageId:c3.id,itemType:'Food',itemName:'Royal Canin',qty:3,unit:'kg',date:d(5),notes:'Bulk feed'});
+  addLog({cageId:c3.id,itemType:'Other',itemName:'Bedding hay',qty:2,unit:'packets',date:d(6),notes:'Replaced old bedding'});
+  addLog({cageId:c4.id,itemType:'Food',itemName:'Millet seeds',qty:0.5,unit:'kg',date:d(1),notes:''});
+  addLog({cageId:c4.id,itemType:'Water',itemName:'Water dispenser refill',qty:0.5,unit:'L',date:d(7),notes:'Cleaned dispenser'});
+}
+
+/* ================================================================
+   MONTH SELECTOR
+   ================================================================ */
+function populateMonthSelector(){
+  const sel = $('#globalMonth');
+  const now = new Date();
+  const options = [];
+  // Show past 12 months + next month
+  for(let i=-1;i<12;i++){
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    const val = `${d.getFullYear()}-${pad(d.getMonth()+1)}`;
+    const label = d.toLocaleString('default',{month:'long',year:'numeric'});
+    options.push({val,label});
+  }
+  sel.innerHTML = options.map(o=>`<option value="${o.val}">${o.label}</option>`).join('');
+  // Default: current month
+  selectedMonth = `${now.getFullYear()}-${pad(now.getMonth()+1)}`;
+  sel.value = selectedMonth;
+  sel.addEventListener('change',()=>{selectedMonth=sel.value;renderAll()});
+}
+
+/* ================================================================
+   TABS
+   ================================================================ */
+function initTabs(){
+  $$('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      $$('.tab-btn').forEach(b=>b.classList.remove('active'));
+      $$('.tab-panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      $(`#panel-${btn.dataset.tab}`).classList.add('active');
+      renderAll();
+    });
+  });
+}
+
+/* ================================================================
+   ANIMAL BADGE HELPER
+   ================================================================ */
+function animalBadgeClass(animal){
+  const a = animal.toLowerCase();
+  if(a==='dog') return 'animal-dog';
+  if(a==='cat') return 'animal-cat';
+  if(a==='bird'||a==='parrot'||a==='pigeon') return 'animal-bird';
+  return 'animal-default';
+}
+
+function formatDate(dateStr){
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+/* ================================================================
+   RENDER — DASHBOARD
+   ================================================================ */
+function renderDashboard(){
+  const ml = logsForMonth(selectedMonth);
+
+  // Metrics
+  const totalEntries = ml.length;
+  const activeCages = new Set(ml.map(l=>l.cageId)).size;
+  const totalFood = ml.filter(l=>l.itemType==='Food').reduce((s,l)=>s+l.qty,0);
+  const totalItems = ml.reduce((s,l)=>s+l.qty,0);
+
+  const metrics = [
+    {v:totalEntries, l:'Entries This Month', icon:'📋'},
+    {v:activeCages+' / '+cages.length, l:'Active Cages', icon:'🏠'},
+    {v:Number(totalFood.toFixed(2)), l:'Food Logged', icon:'🍖'},
+    {v:Number(totalItems.toFixed(2)), l:'Total Qty Logged', icon:'📦'},
+  ];
+
+  $('#metricsRow').innerHTML = metrics.map(m=>
+    `<div class="card metric-card">
+      <div class="value">${m.v}</div>
+      <div class="label">${m.l}</div>
+    </div>`
+  ).join('');
+
+  // Cage cards
+  const cageStats = cages.map(c=>{
+    const cl = ml.filter(l=>l.cageId===c.id);
+    const totalQty = cl.reduce((s,l)=>s+l.qty,0);
+    const types = [...new Set(cl.map(l=>l.itemType))];
+    return { ...c, entries:cl.length, totalQty, types };
+  });
+  const maxQty = Math.max(...cageStats.map(c=>c.totalQty),1);
+
+  if(!cageStats.length){
+    $('#cageGrid').innerHTML = `<div class="empty-state"><div class="empty-icon">🏠</div><div class="empty-text">No cages yet. Add one from Manage Cages.</div></div>`;
+    return;
+  }
+
+  $('#cageGrid').innerHTML = cageStats.map(c=>{
+    const pct = Math.round(c.totalQty/maxQty*100);
+    const badges = c.types.map(t=>`<span class="badge badge-${t.toLowerCase()}">${t}</span>`).join('');
+    return `
+      <div class="card cage-card">
+        <div class="cage-header">
+          <span class="cage-name">${esc(c.name)}</span>
+          <span class="animal-badge ${animalBadgeClass(c.animal)}">${esc(c.animal)}</span>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-item">
+            <div class="stat-val">${c.entries}</div>
+            <div class="stat-lbl">Entries</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val">${Number(c.totalQty.toFixed(2))}</div>
+            <div class="stat-lbl">Total Qty</div>
+          </div>
+        </div>
+        <div class="item-tags">${badges || '<span style="font-size:.76rem;color:#c5c8cf">No entries yet</span>'}</div>
+        <div class="progress-label">
+          <span>Usage</span>
+          <span>${pct}%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>`;
+  }).join('');
+}
+
+/* ================================================================
+   RENDER — LOG FORM
+   ================================================================ */
+function renderLogForm(){
+  const sel = $('#logCage');
+  const prev = sel.value;
+  sel.innerHTML = cages.map(c=>`<option value="${c.id}">${esc(c.name)} — ${esc(c.animal)}</option>`).join('');
+  if(prev && cages.find(c=>c.id==prev)) sel.value = prev;
+  // Set default date to today
+  if(!$('#logDate').value) $('#logDate').value = today();
+}
+
+function initLogForm(){
+  $('#logForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    const cageId = +$('#logCage').value;
+    if(!cageById(cageId)){toast('Cage not found','error');return}
+    addLog({
+      cageId,
+      itemType: $('#logItemType').value,
+      itemName: $('#logItemName').value.trim(),
+      qty: +$('#logQty').value,
+      unit: $('#logUnit').value,
+      date: $('#logDate').value,
+      notes: $('#logNotes').value.trim()
+    });
+    toast('✓ Entry saved successfully!');
+    // Success flash on the card
+    const card = $('#logCard');
+    card.classList.remove('success-flash');
+    void card.offsetWidth; // reflow
+    card.classList.add('success-flash');
+
+    $('#logItemName').value='';
+    $('#logQty').value='';
+    $('#logNotes').value='';
+    renderAll();
+  });
+}
+
+/* ================================================================
+   RENDER — HISTORY
+   ================================================================ */
+function renderHistory(){
+  // Cage filter dropdown
+  const fCage = $('#filterCage');
+  const prevCage = fCage.value;
+  fCage.innerHTML = '<option value="">All Cages</option>' + cages.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  if(prevCage) fCage.value = prevCage;
+
+  let ml = logsForMonth(selectedMonth);
+  if(fCage.value) ml = ml.filter(l=>l.cageId==fCage.value);
+  const fType = $('#filterType').value;
+  if(fType) ml = ml.filter(l=>l.itemType===fType);
+
+  // Sort newest first
+  ml.sort((a,b)=>b.date.localeCompare(a.date) || b.id - a.id);
+
+  const body = $('#historyBody');
+  if(!ml.length){
+    body.innerHTML = `<tr><td colspan="9" class="empty-msg">No entries for this month.</td></tr>`;
+    return;
+  }
+  body.innerHTML = ml.map(l=>{
+    const c = cageById(l.cageId);
+    return `<tr>
+      <td class="date-cell">${formatDate(l.date)}</td>
+      <td class="cage-cell">${c?esc(c.name):'—'}</td>
+      <td>${c?`<span class="animal-pill ${animalBadgeClass(c.animal)}">${esc(c.animal)}</span>`:'—'}</td>
+      <td><span class="badge badge-${l.itemType.toLowerCase()}">${l.itemType}</span></td>
+      <td>${esc(l.itemName)}</td>
+      <td class="qty-cell">${l.qty}</td>
+      <td>${l.unit}</td>
+      <td class="notes-cell" title="${esc(l.notes)}">${esc(l.notes)||'—'}</td>
+      <td><button class="btn btn-danger-sm" data-delete-log="${l.id}">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// Event delegation for history delete buttons
+document.addEventListener('click', e=>{
+  const btn = e.target.closest('[data-delete-log]');
+  if(!btn) return;
+  const id = +btn.dataset.deleteLog;
+  removeLog(id);
+  renderAll();
+  toast('Entry deleted.');
+});
+
+function initHistoryFilters(){
+  $('#filterCage').addEventListener('change',renderHistory);
+  $('#filterType').addEventListener('change',renderHistory);
+}
+
+/* ================================================================
+   CSV EXPORT
+   ================================================================ */
+function initExport(){
+  $('#btnExport').addEventListener('click',()=>{
+    let ml = logsForMonth(selectedMonth);
+    const fc=$('#filterCage').value, ft=$('#filterType').value;
+    if(fc) ml=ml.filter(l=>l.cageId==fc);
+    if(ft) ml=ml.filter(l=>l.itemType===ft);
+    if(!ml.length){toast('Nothing to export.','error');return}
+
+    const headers = ['Date','Cage','Animal','Item Type','Item Name','Quantity','Unit','Notes'];
+    const rows = ml.map(l=>{
+      const c=cageById(l.cageId);
+      return [l.date, c?c.name:'', c?c.animal:'', l.itemType, l.itemName, l.qty, l.unit, l.notes].map(csvCell);
+    });
+    const csv = [headers.join(','), ...rows.map(r=>r.join(','))].join('\n');
+    const blob = new Blob([csv],{type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href=url; a.download=`supply_history_${selectedMonth}.csv`; a.click();
+    URL.revokeObjectURL(url);
+    toast('✓ CSV downloaded.');
+  });
+}
+
+function csvCell(val){
+  const s=String(val??'');
+  return s.includes(',')||s.includes('"')||s.includes('\n') ? `"${s.replace(/"/g,'""')}"` : s;
+}
+
+/* ================================================================
+   RENDER — MANAGE CAGES
+   ================================================================ */
+function renderCages(){
+  const body = $('#cageTableBody');
+  if(!cages.length){
+    body.innerHTML='<tr><td colspan="4" class="empty-msg">No cages yet. Add your first cage above.</td></tr>';
+    return;
+  }
+  body.innerHTML = cages.map(c=>{
+    const entryCount = logs.filter(l=>l.cageId===c.id).length;
+    const isEditing = cageEditingId === c.id;
+    if(isEditing){
+      return `<tr data-cage-row="${c.id}">
+        <td><input class="cage-edit-input" data-edit-field="name" value="${esc(c.name)}" placeholder="Cage name"></td>
+        <td><input class="cage-edit-input" data-edit-field="animal" value="${esc(c.animal)}" placeholder="Animal type"></td>
+        <td class="qty-cell">${entryCount}</td>
+        <td>
+          <div class="cage-actions">
+            <button class="btn btn-save-sm" data-save-cage="${c.id}">✓</button>
+            <button class="btn btn-cancel-sm" data-cancel-edit>✕</button>
+          </div>
+        </td>
+      </tr>`;
+    }
+    return `<tr data-cage-row="${c.id}">
+      <td class="cage-cell">${esc(c.name)}</td>
+      <td><span class="animal-pill ${animalBadgeClass(c.animal)}">${esc(c.animal)}</span></td>
+      <td class="qty-cell">${entryCount}</td>
+      <td>
+        <div class="cage-actions">
+          <button class="btn btn-edit-sm" data-edit-cage="${c.id}">✎ Edit</button>
+          <button class="btn btn-danger-sm" data-delete-cage="${c.id}">✕</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+let cageEditingId = null;
+
+// Event delegation for cage edit/save/cancel buttons
+document.addEventListener('click', e=>{
+  // Start editing
+  const editBtn = e.target.closest('[data-edit-cage]');
+  if(editBtn){
+    cageEditingId = +editBtn.dataset.editCage;
+    renderCages();
+    // Auto-focus the first input
+    const row = $(`[data-cage-row="${cageEditingId}"]`);
+    if(row) row.querySelector('.cage-edit-input')?.focus();
+    return;
+  }
+  // Save editing
+  const saveBtn = e.target.closest('[data-save-cage]');
+  if(saveBtn){
+    const id = +saveBtn.dataset.saveCage;
+    const row = $(`[data-cage-row="${id}"]`);
+    const nameInput = row.querySelector('[data-edit-field="name"]');
+    const animalInput = row.querySelector('[data-edit-field="animal"]');
+    const newName = nameInput.value.trim();
+    const newAnimal = animalInput.value.trim();
+    if(!newName || !newAnimal){
+      toast('Name and animal type cannot be empty.','error');
+      return;
+    }
+    const cage = cageById(id);
+    if(cage){
+      cage.name = newName;
+      cage.animal = newAnimal;
+      toast(`✓ "${newName}" updated!`);
+    }
+    cageEditingId = null;
+    renderAll();
+    return;
+  }
+  // Cancel editing
+  const cancelBtn = e.target.closest('[data-cancel-edit]');
+  if(cancelBtn){
+    cageEditingId = null;
+    renderCages();
+    return;
+  }
+});
+
+// Allow Enter to save and Escape to cancel in cage edit inputs
+document.addEventListener('keydown', e=>{
+  if(cageEditingId === null) return;
+  if(!e.target.matches('.cage-edit-input')) return;
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    const saveBtn = $(`[data-save-cage="${cageEditingId}"]`);
+    if(saveBtn) saveBtn.click();
+  }
+  if(e.key === 'Escape'){
+    cageEditingId = null;
+    renderCages();
+  }
+});
+
+// Event delegation for cage delete buttons
+document.addEventListener('click', e=>{
+  const btn = e.target.closest('[data-delete-cage]');
+  if(!btn) return;
+  const id = +btn.dataset.deleteCage;
+  const c = cageById(id);
+  if(!c) return;
+  const entryCount = logs.filter(l=>l.cageId===id).length;
+  showConfirm(
+    `Delete "${c.name}"?`,
+    `This will permanently remove "${c.name}" (${c.animal}) and ${entryCount} associated log ${entryCount===1?'entry':'entries'}.`,
+    ()=>{
+      removeCage(id);
+      renderAll();
+      toast(`"${c.name}" deleted.`);
+    }
+  );
+});
+
+function initCageForm(){
+  $('#cageForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    const name=$('#cageName').value.trim(), animal=$('#cageAnimal').value.trim();
+    if(!name||!animal) return;
+    addCage(name,animal);
+    toast(`✓ "${name}" added!`);
+    $('#cageName').value='';$('#cageAnimal').value='';
+    renderAll();
+  });
+}
+
+/* ================================================================
+   CSV EXPORT
+   ================================================================ */
+function initExport(){
+  $('#btnExport').addEventListener('click',()=>{
+    let ml = logsForMonth(selectedMonth);
+    const fc=$('#filterCage').value, ft=$('#filterType').value;
+    if(fc) ml=ml.filter(l=>l.cageId==fc);
+    if(ft) ml=ml.filter(l=>l.itemType===ft);
+    if(!ml.length){toast('Nothing to export.','error');return}
+
+    const headers = ['Date','Cage','Animal','Item Type','Item Name','Quantity','Unit','Notes'];
+    const rows = ml.map(l=>{
+      const c=cageById(l.cageId);
+      return [l.date, c?c.name:'', c?c.animal:'', l.itemType, l.itemName, l.qty, l.unit, l.notes].map(csvCell);
+    });
+    const csv = '\uFEFF' + [headers.join(','), ...rows.map(r=>r.join(','))].join('\r\n');
+    const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `supply_history_${selectedMonth}.csv`;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 200);
+    toast('✓ CSV downloaded.');
+  });
+}
+
+function csvCell(val){
+  const s=String(val??'');
+  return s.includes(',')||s.includes('"')||s.includes('\n') ? `"${s.replace(/"/g,'""')}"` : s;
+}
+
+/* ================================================================
+   UTILITIES
+   ================================================================ */
+function esc(s){
+  if(!s) return '';
+  const d=document.createElement('div');d.textContent=s;return d.innerHTML;
+}
+
+function toast(msg, type){
+  const t=$('#toast');
+  t.textContent=msg;
+  t.className='toast'+(type==='error'?' error':'')+' show';
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function renderAll(){
+  renderDashboard();
+  renderLogForm();
+  renderHistory();
+  renderCages();
+}
+
+/* ================================================================
+   INIT
+   ================================================================ */
+seedData();
+populateMonthSelector();
+initTabs();
+initLogForm();
+initHistoryFilters();
+initExport();
+initCageForm();
+renderAll();
+</script>
+</body>
+</html>
