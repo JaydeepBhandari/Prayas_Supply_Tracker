@@ -40,14 +40,7 @@ cd Prayas_Supply_Tracker
 
 Then open `index.html` in your browser. That's it.
 
-### Deploy to Vercel
 
-1. Push to GitHub (already done ✓)
-2. Go to [vercel.com/new](https://vercel.com/new)
-3. Import this repository
-4. Leave all settings as default → **Deploy**
-
----
 
 ## 🛠️ Tech Stack
 
@@ -97,6 +90,4 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-<p align="center">
-  Made with ❤️ for the animals at <strong>Prayas</strong>
-</p>
+
