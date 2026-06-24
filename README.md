@@ -10,20 +10,22 @@ A lightweight, browser-based supply management tool built for **Prayas Animal Sh
 
 | Feature | Description |
 |---|---|
-| **📊 Dashboard** | At-a-glance metrics — active cages, entries this month, total food & quantity logged, with per-cage usage cards |
-| **📝 Log Supply** | Quick form to record food, medicine, water, or other supplies against any cage |
-| **📋 History** | Filterable table of all entries for the selected month, with one-click delete |
-| **🏠 Manage Cages** | Add, edit (inline), or remove cages — animal type and cage name are fully editable |
-| **⬇ CSV Export** | Download filtered supply history as a `.csv` file for reporting |
-| **📅 Month Selector** | Browse data across the last 12 months with a single dropdown |
+| **📊 Dashboard** | At-a-glance metrics, active cages, total food logged. Features per-cage cards showing daily averages and a minimal low-stock warning system based on expected monthly food targets. |
+| **📝 Log Supply** | Quick form to record food, medicine, water, or other supplies. Features 1-click quick-log buttons and a "Duplicate Last Entry" helper for rapid data entry. |
+| **📋 History** | Filterable table of all entries for the selected month, with one-click delete. |
+| **🏠 Manage Cages** | Add, edit (inline), or remove cages. Track animal type, cage name, and expected monthly food (kg). |
+| **📈 Report** | A dedicated monthly summary tab showing overall item totals and a detailed per-cage breakdown. |
+| **⬇ Excel Export** | Download filtered supply history as a native `.xls` file for easy spreadsheet reporting. |
+| **💾 Local Storage** | All cage and log data is automatically persisted in your browser's local storage between sessions. |
+| **📅 Month Selector** | Browse data across the last 12 months with a single dropdown. |
 
 ---
 
 ## 🖼️ Preview
 
-| Dashboard | Log Supply | Manage Cages |
+| Dashboard | Log Supply | Report |
 |---|---|---|
-| Metric cards + cage overview grid | Clean form with auto-date | Inline editing with save/cancel |
+| Metric cards + minimal cage overviews | Quick-log buttons + auto-date | Monthly summary cards + cage breakdown |
 
 ---
 
@@ -38,16 +40,14 @@ git clone https://github.com/JaydeepBhandari/Prayas_Supply_Tracker.git
 cd Prayas_Supply_Tracker
 ```
 
-Then open `index.html` in your browser. That's it.
-
-
+Then open `index.html` in your browser. That's it. Your data will be saved locally.
 
 ## 🛠️ Tech Stack
 
 - **HTML5** — semantic structure
 - **Vanilla CSS** — custom design system with CSS variables, no frameworks
 - **Vanilla JavaScript** — zero dependencies, all logic in a single file
-- **LocalStorage-ready architecture** — data layer is modular and easy to persist
+- **LocalStorage API** — for automatic, persistent client-side data storage
 
 ---
 
@@ -55,7 +55,8 @@ Then open `index.html` in your browser. That's it.
 
 ```
 Prayas_Supply_Tracker/
-└── index.html      # Entire app — markup, styles, and logic
+├── index.html      # Entire app — markup, styles, and logic
+└── logo.png        # Custom brand logo for the header
 ```
 
 Single-file architecture keeps deployment dead simple while maintaining clean separation of concerns internally (CSS → HTML → JS data layer → render layer).
@@ -64,10 +65,11 @@ Single-file architecture keeps deployment dead simple while maintaining clean se
 
 ## 🎯 Roadmap
 
-- [ ] Persist data with `localStorage` or a backend
+- [x] Persist data with `localStorage`
+- [x] Add monthly reporting metrics
+- [x] Excel data exports
 - [ ] Add user authentication for volunteers
 - [ ] Photo uploads for cage inspections
-- [ ] Monthly PDF report generation
 - [ ] Dark mode toggle
 
 ---
@@ -87,7 +89,3 @@ This is an internal tool for Prayas Animal Shelter. If you'd like to contribute 
 ## 📄 License
 
 This project is open source and available under the [MIT License](LICENSE).
-
----
-
-
