@@ -43,16 +43,23 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .app-header{
   background:var(--card);border-bottom:1px solid var(--border);
   padding:0 32px;display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:100;height:56px;
+  position:sticky;top:0;z-index:100;height:60px;
   backdrop-filter:blur(8px);background:rgba(255,255,255,.92);
 }
-.app-header h1{
-  font-size:1.2rem;font-weight:800;letter-spacing:-.4px;color:var(--accent);
-  display:flex;align-items:center;gap:8px;
+.app-header .logo-link{
+  display:flex;align-items:center;gap:12px;text-decoration:none;
 }
-.app-header h1 span{
-  font-weight:400;color:var(--text-dim);font-size:.82rem;
-  padding-left:8px;border-left:1px solid var(--border);
+.app-header .logo-img{
+  height:42px;width:auto;object-fit:contain;
+}
+.app-header .logo-text{
+  font-size:.82rem;font-weight:500;color:var(--text-dim);
+  padding-left:12px;border-left:1.5px solid var(--border);
+  line-height:1.3;letter-spacing:-.1px;
+}
+.app-header .logo-text strong{
+  display:block;font-size:.92rem;font-weight:700;color:var(--text);
+  letter-spacing:-.3px;
 }
 
 .month-selector{display:flex;align-items:center;gap:10px}
@@ -353,6 +360,7 @@ tbody tr:last-child td:last-child{border-radius:0 0 var(--radius-sm) 0}
 }
 @media(max-width:640px){
   .app-header{flex-direction:column;gap:10px;padding:12px 16px;height:auto}
+  .app-header .logo-img{height:36px}
   .tab-bar{padding:0 12px;overflow-x:auto}
   .tab-btn{padding:11px 16px;white-space:nowrap;font-size:.8rem}
   .main{padding:16px}
@@ -360,13 +368,118 @@ tbody tr:last-child td:last-child{border-radius:0 0 var(--radius-sm) 0}
   .metrics{grid-template-columns:1fr 1fr}
   .cage-grid{grid-template-columns:1fr}
 }
+@media(max-width:480px){
+  .app-header .logo-text{display:none}
+  .app-header .logo-img{height:32px}
+}
+
+/* ── Quick-Log Bar ───────────────────────────────────── */
+.quick-log-bar{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;
+}
+.quick-log-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:7px 16px;font-size:.78rem;font-weight:600;
+  border:1.5px solid var(--border);border-radius:20px;
+  background:var(--card);color:var(--text);cursor:pointer;
+  transition:var(--transition);font-family:var(--font);
+  letter-spacing:-.1px;
+}
+.quick-log-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.quick-log-btn.active{border-color:var(--accent);background:var(--accent);color:#fff}
+.quick-log-btn .ql-animal{font-size:.68rem;color:var(--text-dim);font-weight:500}
+.quick-log-btn.active .ql-animal{color:rgba(255,255,255,.8)}
+
+/* ── Duplicate Button ────────────────────────────────── */
+.btn-duplicate{
+  background:transparent;color:var(--purple);border:1.5px solid var(--purple);
+}
+.btn-duplicate:hover{background:var(--purple);color:#fff;box-shadow:0 4px 12px rgba(124,58,237,.25)}
+
+/* ── Low Stock Alert ─────────────────────────────────── */
+.cage-card.low-stock{
+  border-color:#f59e0b;
+  background:linear-gradient(135deg,#fffbeb 0%,#ffffff 40%);
+}
+.low-stock-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:.68rem;font-weight:700;padding:3px 10px;
+  border-radius:20px;background:#fef3c7;color:#92400e;
+  border:1px solid #fcd34d;letter-spacing:.3px;
+}
+.progress-track-stock{
+  height:6px;background:#eef0f4;border-radius:20px;overflow:hidden;
+}
+.progress-fill-stock{
+  height:100%;border-radius:20px;
+  transition:width .6s cubic-bezier(.4,0,.2,1);
+}
+.progress-fill-stock.ok{background:linear-gradient(90deg,var(--green),#4ade80)}
+.progress-fill-stock.warn{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.progress-fill-stock.danger{background:linear-gradient(90deg,var(--red),#f87171)}
+
+/* ── Missed Days ─────────────────────────────────────── */
+.missed-days{
+  font-size:.74rem;font-weight:600;margin-top:8px;
+  display:flex;align-items:center;gap:4px;
+}
+.missed-days.ok{color:var(--green)}
+.missed-days.warn{color:var(--red)}
+
+/* ── Stat grid 3 col ─────────────────────────────────── */
+.cage-card .stat-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+
+/* ── Report Tab ──────────────────────────────────────── */
+.report-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.report-metric{text-align:center;padding:22px 14px;position:relative;overflow:hidden}
+.report-metric::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  border-radius:var(--radius) var(--radius) 0 0;
+}
+.report-metric:nth-child(1)::before{background:var(--green)}
+.report-metric:nth-child(2)::before{background:var(--blue)}
+.report-metric:nth-child(3)::before{background:var(--purple)}
+.report-metric:nth-child(4)::before{background:var(--gray)}
+.report-metric .value{font-size:1.8rem;font-weight:800;line-height:1.1}
+.report-metric:nth-child(1) .value{color:var(--green)}
+.report-metric:nth-child(2) .value{color:var(--blue)}
+.report-metric:nth-child(3) .value{color:var(--purple)}
+.report-metric:nth-child(4) .value{color:var(--gray)}
+.report-metric .label{
+  font-size:.72rem;color:var(--text-dim);margin-top:6px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.6px;
+}
+.report-header{
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:10px;margin-bottom:20px;
+}
+.btn-print{background:var(--accent);color:#fff}
+.btn-print:hover{background:var(--accent-hover);box-shadow:0 4px 12px rgba(79,110,247,.3)}
+
+/* ── Print ───────────────────────────────────────────── */
+@media print{
+  body{background:#fff!important}
+  .app-header,.tab-bar,.toast,.modal-overlay{display:none!important}
+  .tab-panel{display:none!important}
+  #panel-report{display:block!important}
+  .main{padding:0!important;max-width:100%!important}
+  .card{box-shadow:none!important;border:1px solid #ddd!important}
+  .btn-print{display:none!important}
+  .report-summary{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:640px){
+  .report-summary{grid-template-columns:1fr 1fr}
+}
 </style>
 </head>
 <body>
 
 <!-- ── Header ─────────────────────────────────────────── -->
 <header class="app-header">
-  <h1>🐾 Prayas <span>Supply Tracker</span></h1>
+  <a class="logo-link" href="#">
+    <img src="logo.png" alt="Team Prayas — Planet Us" class="logo-img">
+    <span class="logo-text"><strong>Supply Tracker</strong>Logging &amp; Management</span>
+  </a>
   <div class="month-selector">
     <label for="globalMonth">Viewing</label>
     <select id="globalMonth"></select>
@@ -379,6 +492,7 @@ tbody tr:last-child td:last-child{border-radius:0 0 var(--radius-sm) 0}
   <button class="tab-btn" data-tab="log" id="tab-log">📝 Log Supply</button>
   <button class="tab-btn" data-tab="history" id="tab-history">📋 History</button>
   <button class="tab-btn" data-tab="cages" id="tab-cages">🏠 Manage Cages</button>
+  <button class="tab-btn" data-tab="report" id="tab-report">📄 Report</button>
 </nav>
 
 <!-- ── Main Content ───────────────────────────────────── -->
@@ -395,6 +509,7 @@ tbody tr:last-child td:last-child{border-radius:0 0 var(--radius-sm) 0}
   <section class="tab-panel" id="panel-log">
     <div class="card" id="logCard" style="max-width:660px">
       <h2 class="section-title">Log a Supply Entry</h2>
+      <div class="quick-log-bar" id="quickLogBar"></div>
       <form id="logForm" class="form-grid">
         <div class="form-group">
           <label for="logCage">Cage</label>
@@ -403,10 +518,10 @@ tbody tr:last-child td:last-child{border-radius:0 0 var(--radius-sm) 0}
         <div class="form-group">
           <label for="logItemType">Item Type</label>
           <select id="logItemType" required>
-            <option value="Food">🍖 Food</option>
-            <option value="Medicine">💊 Medicine</option>
-            <option value="Water">💧 Water</option>
-            <option value="Other">📦 Other</option>
+            <option value="Food">Food</option>
+            <option value="Medicine">Medicine</option>
+            <option value="Water">Water</option>
+            <option value="Other">Other</option>
           </select>
         </div>
         <div class="form-group">
@@ -437,8 +552,9 @@ tbody tr:last-child td:last-child{border-radius:0 0 var(--radius-sm) 0}
           <label for="logNotes">Notes <span style="font-weight:400;color:#b0b5bf;text-transform:none;letter-spacing:0">(optional)</span></label>
           <textarea id="logNotes" placeholder="Any additional details…"></textarea>
         </div>
-        <div class="form-group full" style="flex-direction:row">
+        <div class="form-group full" style="flex-direction:row;gap:10px">
           <button type="submit" class="btn btn-primary">✓ Save Entry</button>
+          <button type="button" class="btn btn-duplicate" id="btnDuplicate">⧉ Duplicate Last Entry</button>
         </div>
       </form>
     </div>
@@ -449,7 +565,7 @@ tbody tr:last-child td:last-child{border-radius:0 0 var(--radius-sm) 0}
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:6px">
         <h2 class="section-title" style="margin-bottom:0">Supply History</h2>
-        <button class="btn btn-export" id="btnExport">⬇ Export CSV</button>
+        <button class="btn btn-export" id="btnExport">⬇ Export Excel</button>
       </div>
       <div class="filter-row">
         <div class="form-group">
@@ -483,9 +599,9 @@ tbody tr:last-child td:last-child{border-radius:0 0 var(--radius-sm) 0}
 
   <!-- Manage Cages -->
   <section class="tab-panel" id="panel-cages">
-    <div class="card" style="max-width:580px;margin-bottom:20px">
+    <div class="card" style="max-width:700px;margin-bottom:20px">
       <h2 class="section-title">Add New Cage</h2>
-      <form id="cageForm" class="form-grid" style="grid-template-columns:1fr 1fr auto;align-items:end">
+      <form id="cageForm" class="form-grid" style="grid-template-columns:1fr 1fr 1fr auto;align-items:end">
         <div class="form-group">
           <label for="cageName">Cage Name</label>
           <input type="text" id="cageName" placeholder="e.g. Cage E" required>
@@ -494,6 +610,10 @@ tbody tr:last-child td:last-child{border-radius:0 0 var(--radius-sm) 0}
           <label for="cageAnimal">Animal Type</label>
           <input type="text" id="cageAnimal" placeholder="e.g. Rabbit" required>
         </div>
+        <div class="form-group">
+          <label for="cageExpectedFood">Expected Food (kg/mo)</label>
+          <input type="number" id="cageExpectedFood" min="0" step="0.1" placeholder="0" value="0">
+        </div>
         <button type="submit" class="btn btn-primary" style="height:40px">+ Add</button>
       </form>
     </div>
@@ -501,8 +621,32 @@ tbody tr:last-child td:last-child{border-radius:0 0 var(--radius-sm) 0}
       <h2 class="section-title">All Cages</h2>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Cage Name</th><th>Animal Type</th><th>Entries</th><th style="width:140px"></th></tr></thead>
+          <thead><tr><th>Cage Name</th><th>Animal Type</th><th>Expected Food</th><th>Entries</th><th style="width:160px"></th></tr></thead>
           <tbody id="cageTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Report -->
+  <section class="tab-panel" id="panel-report">
+    <div class="card">
+      <div class="report-header">
+        <h2 class="section-title" style="margin-bottom:0">📄 Monthly Summary Report</h2>
+        <button class="btn btn-print" id="btnPrint">🖨 Print Report</button>
+      </div>
+      <h3 id="reportMonthLabel" style="font-size:.88rem;color:var(--text-dim);margin-bottom:18px"></h3>
+      <div class="report-summary" id="reportSummary"></div>
+      <h3 style="font-size:.92rem;font-weight:700;margin-bottom:12px">Per-Cage Breakdown</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Cage</th><th>Animal</th><th>Food</th><th>Medicine</th>
+              <th>Water</th><th>Other</th><th>Missed Days</th>
+            </tr>
+          </thead>
+          <tbody id="reportBody"></tbody>
         </table>
       </div>
     </div>
@@ -536,6 +680,30 @@ let cages = [];
 let logs = [];
 let selectedMonth = ''; // "YYYY-MM"
 
+// LocalStorage
+function saveToStorage() {
+  localStorage.setItem('shelter_cages', JSON.stringify(cages));
+  localStorage.setItem('shelter_logs', JSON.stringify(logs));
+}
+
+function loadFromStorage() {
+  const c = localStorage.getItem('shelter_cages');
+  const l = localStorage.getItem('shelter_logs');
+  if (c && l) {
+    try {
+      cages = JSON.parse(c);
+      logs = JSON.parse(l);
+      nextCageId = Math.max(0, ...cages.map(x=>x.id)) + 1;
+      nextLogId = Math.max(0, ...logs.map(x=>x.id)) + 1;
+      return true;
+    } catch(e) {
+      console.error(e);
+      return false;
+    }
+  }
+  return false;
+}
+
 // Helpers
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
@@ -544,25 +712,29 @@ const today = () => {const d=new Date();return `${d.getFullYear()}-${pad(d.getMo
 
 function monthKey(dateStr){ return dateStr.slice(0,7) }
 
-function addCage(name, animal){
-  const cage = { id: nextCageId++, name, animal };
+function addCage(name, animal, expectedMonthlyFood){
+  const cage = { id: nextCageId++, name, animal, expectedMonthlyFood: expectedMonthlyFood || 0 };
   cages.push(cage);
+  saveToStorage();
   return cage;
 }
 
 function removeCage(id){
   cages = cages.filter(c=>c.id!==id);
   logs = logs.filter(l=>l.cageId!==id);
+  saveToStorage();
 }
 
 function addLog(entry){
   entry.id = nextLogId++;
   logs.push(entry);
+  saveToStorage();
   return entry;
 }
 
 function removeLog(id){
   logs = logs.filter(l=>l.id!==id);
+  saveToStorage();
 }
 
 function logsForMonth(month){
@@ -599,10 +771,10 @@ function showConfirm(title, message, onConfirm){
    SEED DATA
    ================================================================ */
 function seedData(){
-  const c1 = addCage('Cage A','Dog');
-  const c2 = addCage('Cage B','Cat');
-  const c3 = addCage('Cage C','Dog');
-  const c4 = addCage('Cage D','Bird');
+  const c1 = addCage('Cage A','Dog', 10);
+  const c2 = addCage('Cage B','Cat', 8);
+  const c3 = addCage('Cage C','Dog', 15);
+  const c4 = addCage('Cage D','Bird', 3);
 
   const now = new Date();
   const y = now.getFullYear(), m = now.getMonth()+1;
@@ -670,11 +842,19 @@ function formatDate(dateStr){
   return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
 }
 
-/* ================================================================
-   RENDER — DASHBOARD
-   ================================================================ */
+function getDaysElapsed(monthStr){
+  const [y,m] = monthStr.split('-').map(Number);
+  const now = new Date();
+  const curMonth = `${now.getFullYear()}-${pad(now.getMonth()+1)}`;
+  if(monthStr === curMonth){
+    return now.getDate(); // days passed so far this month
+  }
+  return new Date(y, m, 0).getDate(); // total days in that month
+}
+
 function renderDashboard(){
   const ml = logsForMonth(selectedMonth);
+  const daysElapsed = getDaysElapsed(selectedMonth);
 
   // Metrics
   const totalEntries = ml.length;
@@ -701,9 +881,10 @@ function renderDashboard(){
     const cl = ml.filter(l=>l.cageId===c.id);
     const totalQty = cl.reduce((s,l)=>s+l.qty,0);
     const types = [...new Set(cl.map(l=>l.itemType))];
-    return { ...c, entries:cl.length, totalQty, types };
+    const dailyAvg = daysElapsed > 0 ? totalQty / daysElapsed : 0;
+    const actualFood = cl.filter(l=>l.itemType==='Food').reduce((s,l)=>s+l.qty,0);
+    return { ...c, entries:cl.length, totalQty, types, dailyAvg, actualFood };
   });
-  const maxQty = Math.max(...cageStats.map(c=>c.totalQty),1);
 
   if(!cageStats.length){
     $('#cageGrid').innerHTML = `<div class="empty-state"><div class="empty-icon">🏠</div><div class="empty-text">No cages yet. Add one from Manage Cages.</div></div>`;
@@ -711,15 +892,28 @@ function renderDashboard(){
   }
 
   $('#cageGrid').innerHTML = cageStats.map(c=>{
-    const pct = Math.round(c.totalQty/maxQty*100);
     const badges = c.types.map(t=>`<span class="badge badge-${t.toLowerCase()}">${t}</span>`).join('');
+
+    // Low stock minimal text
+    let stockInfo = '';
+    let lowStockClass = '';
+    if(c.expectedMonthlyFood > 0){
+      const foodPct = Math.min(100, Math.round(c.actualFood / c.expectedMonthlyFood * 100));
+      if(foodPct < 70){
+        lowStockClass = ' low-stock';
+      }
+      stockInfo = `<div style="font-size: 0.8rem; color: #6b7280; margin-top: 12px; font-weight: 500; border-top: 1px solid #edf2f7; padding-top: 8px;">
+        Food: ${Number(c.actualFood.toFixed(2))} / ${c.expectedMonthlyFood} kg
+      </div>`;
+    }
+
     return `
-      <div class="card cage-card">
+      <div class="card cage-card${lowStockClass}">
         <div class="cage-header">
           <span class="cage-name">${esc(c.name)}</span>
           <span class="animal-badge ${animalBadgeClass(c.animal)}">${esc(c.animal)}</span>
         </div>
-        <div class="stat-grid">
+        <div class="stat-grid-3">
           <div class="stat-item">
             <div class="stat-val">${c.entries}</div>
             <div class="stat-lbl">Entries</div>
@@ -728,13 +922,13 @@ function renderDashboard(){
             <div class="stat-val">${Number(c.totalQty.toFixed(2))}</div>
             <div class="stat-lbl">Total Qty</div>
           </div>
+          <div class="stat-item">
+            <div class="stat-val">${Number(c.dailyAvg.toFixed(2))}</div>
+            <div class="stat-lbl">Daily Avg</div>
+          </div>
         </div>
         <div class="item-tags">${badges || '<span style="font-size:.76rem;color:#c5c8cf">No entries yet</span>'}</div>
-        <div class="progress-label">
-          <span>Usage</span>
-          <span>${pct}%</span>
-        </div>
-        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+        ${stockInfo}
       </div>`;
   }).join('');
 }
@@ -749,6 +943,15 @@ function renderLogForm(){
   if(prev && cages.find(c=>c.id==prev)) sel.value = prev;
   // Set default date to today
   if(!$('#logDate').value) $('#logDate').value = today();
+
+  // Quick-log buttons
+  const bar = $('#quickLogBar');
+  bar.innerHTML = cages.map(c=>{
+    const isActive = sel.value == c.id;
+    return `<button type="button" class="quick-log-btn${isActive?' active':''}" data-quick-cage="${c.id}">
+      ${esc(c.name)} <span class="ql-animal">${esc(c.animal)}</span>
+    </button>`;
+  }).join('');
 }
 
 function initLogForm(){
@@ -776,6 +979,46 @@ function initLogForm(){
     $('#logQty').value='';
     $('#logNotes').value='';
     renderAll();
+  });
+
+  // Quick-log button delegation
+  document.addEventListener('click', e=>{
+    const btn = e.target.closest('[data-quick-cage]');
+    if(!btn) return;
+    const cageId = btn.dataset.quickCage;
+    $('#logCage').value = cageId;
+    // Update active states
+    $$('.quick-log-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    // Switch to log tab if not already there
+    const logPanel = $('#panel-log');
+    if(!logPanel.classList.contains('active')){
+      $$('.tab-btn').forEach(b=>b.classList.remove('active'));
+      $$('.tab-panel').forEach(p=>p.classList.remove('active'));
+      $('#tab-log').classList.add('active');
+      logPanel.classList.add('active');
+    }
+  });
+
+  // Duplicate last entry
+  $('#btnDuplicate').addEventListener('click', ()=>{
+    if(!logs.length){
+      toast('No entries to duplicate.','error');
+      return;
+    }
+    const last = logs[logs.length - 1];
+    $('#logCage').value = last.cageId;
+    $('#logItemType').value = last.itemType;
+    $('#logItemName').value = last.itemName;
+    $('#logQty').value = last.qty;
+    $('#logUnit').value = last.unit;
+    $('#logDate').value = today();
+    $('#logNotes').value = last.notes || '';
+    // Update quick-log button active state
+    $$('.quick-log-btn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.quickCage == last.cageId);
+    });
+    toast('Last entry loaded — adjust and save.');
   });
 }
 
@@ -834,43 +1077,12 @@ function initHistoryFilters(){
 }
 
 /* ================================================================
-   CSV EXPORT
-   ================================================================ */
-function initExport(){
-  $('#btnExport').addEventListener('click',()=>{
-    let ml = logsForMonth(selectedMonth);
-    const fc=$('#filterCage').value, ft=$('#filterType').value;
-    if(fc) ml=ml.filter(l=>l.cageId==fc);
-    if(ft) ml=ml.filter(l=>l.itemType===ft);
-    if(!ml.length){toast('Nothing to export.','error');return}
-
-    const headers = ['Date','Cage','Animal','Item Type','Item Name','Quantity','Unit','Notes'];
-    const rows = ml.map(l=>{
-      const c=cageById(l.cageId);
-      return [l.date, c?c.name:'', c?c.animal:'', l.itemType, l.itemName, l.qty, l.unit, l.notes].map(csvCell);
-    });
-    const csv = [headers.join(','), ...rows.map(r=>r.join(','))].join('\n');
-    const blob = new Blob([csv],{type:'text/csv'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href=url; a.download=`supply_history_${selectedMonth}.csv`; a.click();
-    URL.revokeObjectURL(url);
-    toast('✓ CSV downloaded.');
-  });
-}
-
-function csvCell(val){
-  const s=String(val??'');
-  return s.includes(',')||s.includes('"')||s.includes('\n') ? `"${s.replace(/"/g,'""')}"` : s;
-}
-
-/* ================================================================
    RENDER — MANAGE CAGES
    ================================================================ */
 function renderCages(){
   const body = $('#cageTableBody');
   if(!cages.length){
-    body.innerHTML='<tr><td colspan="4" class="empty-msg">No cages yet. Add your first cage above.</td></tr>';
+    body.innerHTML='<tr><td colspan="5" class="empty-msg">No cages yet. Add your first cage above.</td></tr>';
     return;
   }
   body.innerHTML = cages.map(c=>{
@@ -880,6 +1092,7 @@ function renderCages(){
       return `<tr data-cage-row="${c.id}">
         <td><input class="cage-edit-input" data-edit-field="name" value="${esc(c.name)}" placeholder="Cage name"></td>
         <td><input class="cage-edit-input" data-edit-field="animal" value="${esc(c.animal)}" placeholder="Animal type"></td>
+        <td><input class="cage-edit-input" data-edit-field="expectedFood" type="number" min="0" step="0.1" value="${c.expectedMonthlyFood}" placeholder="0" style="max-width:80px"></td>
         <td class="qty-cell">${entryCount}</td>
         <td>
           <div class="cage-actions">
@@ -892,6 +1105,7 @@ function renderCages(){
     return `<tr data-cage-row="${c.id}">
       <td class="cage-cell">${esc(c.name)}</td>
       <td><span class="animal-pill ${animalBadgeClass(c.animal)}">${esc(c.animal)}</span></td>
+      <td class="qty-cell">${c.expectedMonthlyFood ? c.expectedMonthlyFood + ' kg' : '—'}</td>
       <td class="qty-cell">${entryCount}</td>
       <td>
         <div class="cage-actions">
@@ -924,8 +1138,10 @@ document.addEventListener('click', e=>{
     const row = $(`[data-cage-row="${id}"]`);
     const nameInput = row.querySelector('[data-edit-field="name"]');
     const animalInput = row.querySelector('[data-edit-field="animal"]');
+    const expectedInput = row.querySelector('[data-edit-field="expectedFood"]');
     const newName = nameInput.value.trim();
     const newAnimal = animalInput.value.trim();
+    const newExpected = +(expectedInput ? expectedInput.value : 0);
     if(!newName || !newAnimal){
       toast('Name and animal type cannot be empty.','error');
       return;
@@ -934,7 +1150,9 @@ document.addEventListener('click', e=>{
     if(cage){
       cage.name = newName;
       cage.animal = newAnimal;
+      cage.expectedMonthlyFood = newExpected;
       toast(`✓ "${newName}" updated!`);
+      saveToStorage();
     }
     cageEditingId = null;
     renderAll();
@@ -987,16 +1205,17 @@ function initCageForm(){
   $('#cageForm').addEventListener('submit',e=>{
     e.preventDefault();
     const name=$('#cageName').value.trim(), animal=$('#cageAnimal').value.trim();
+    const expectedFood = +($('#cageExpectedFood').value || 0);
     if(!name||!animal) return;
-    addCage(name,animal);
+    addCage(name, animal, expectedFood);
     toast(`✓ "${name}" added!`);
-    $('#cageName').value='';$('#cageAnimal').value='';
+    $('#cageName').value='';$('#cageAnimal').value='';$('#cageExpectedFood').value='0';
     renderAll();
   });
 }
 
 /* ================================================================
-   CSV EXPORT
+   EXCEL EXPORT
    ================================================================ */
 function initExport(){
   $('#btnExport').addEventListener('click',()=>{
@@ -1007,30 +1226,41 @@ function initExport(){
     if(!ml.length){toast('Nothing to export.','error');return}
 
     const headers = ['Date','Cage','Animal','Item Type','Item Name','Quantity','Unit','Notes'];
-    const rows = ml.map(l=>{
+    const tableRows = ml.map(l=>{
       const c=cageById(l.cageId);
-      return [l.date, c?c.name:'', c?c.animal:'', l.itemType, l.itemName, l.qty, l.unit, l.notes].map(csvCell);
-    });
-    const csv = '\uFEFF' + [headers.join(','), ...rows.map(r=>r.join(','))].join('\r\n');
-    const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+      const cells = [l.date, c?c.name:'', c?c.animal:'', l.itemType, l.itemName, l.qty, l.unit, l.notes||''];
+      return '<tr>' + cells.map(v=>`<td>${esc(String(v))}</td>`).join('') + '</tr>';
+    }).join('');
+
+    const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:x="urn:schemas-microsoft-com:office:excel"
+      xmlns="http://www.w3.org/TR/REC-html40">
+      <head><meta charset="utf-8">
+      <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>
+      <x:ExcelWorksheet><x:Name>Supply History<\/x:Name>
+      <x:WorksheetOptions><x:DisplayGridlines\/><\/x:WorksheetOptions>
+      <\/x:ExcelWorksheet><\/x:ExcelWorksheets><\/x:ExcelWorkbook><\/xml><![endif]-->
+      <style>td,th{border:1px solid #ccc;padding:6px 10px;font-family:Calibri,sans-serif;font-size:11pt}
+      th{background:#4472C4;color:#fff;font-weight:bold}<\/style>
+      <\/head><body>
+      <table><thead><tr>${headers.map(h=>`<th>${h}<\/th>`).join('')}<\/tr><\/thead>
+      <tbody>${tableRows}<\/tbody><\/table>
+      <\/body><\/html>`;
+
+    const blob = new Blob([html], {type:'application/vnd.ms-excel;charset=utf-8;'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `supply_history_${selectedMonth}.csv`;
+    a.download = `supply_history_${selectedMonth}.xls`;
     a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
     setTimeout(()=>{
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    }, 200);
-    toast('✓ CSV downloaded.');
+    }, 300);
+    toast('✓ Excel file downloaded.');
   });
-}
-
-function csvCell(val){
-  const s=String(val??'');
-  return s.includes(',')||s.includes('"')||s.includes('\n') ? `"${s.replace(/"/g,'""')}"` : s;
 }
 
 /* ================================================================
@@ -1054,18 +1284,87 @@ function renderAll(){
   renderLogForm();
   renderHistory();
   renderCages();
+  renderReport();
+}
+
+/* ================================================================
+   RENDER — REPORT
+   ================================================================ */
+function renderReport(){
+  const ml = logsForMonth(selectedMonth);
+  const daysElapsed = getDaysElapsed(selectedMonth);
+
+  // Month label
+  const [sy,sm] = selectedMonth.split('-').map(Number);
+  const monthLabel = new Date(sy, sm-1, 1).toLocaleString('default',{month:'long', year:'numeric'});
+  $('#reportMonthLabel').textContent = `Report for ${monthLabel}`;
+
+  // Summary totals per type
+  const types = ['Food','Medicine','Water','Other'];
+  const totals = types.map(t => ml.filter(l=>l.itemType===t).reduce((s,l)=>s+l.qty,0));
+
+  $('#reportSummary').innerHTML = types.map((t,i) =>
+    `<div class="card report-metric">
+      <div class="value">${Number(totals[i].toFixed(2))}</div>
+      <div class="label">Total ${t}</div>
+    </div>`
+  ).join('');
+
+  // Per-cage breakdown
+  const rows = cages.map(c=>{
+    const cl = ml.filter(l=>l.cageId===c.id);
+    const food = cl.filter(l=>l.itemType==='Food').reduce((s,l)=>s+l.qty,0);
+    const medicine = cl.filter(l=>l.itemType==='Medicine').reduce((s,l)=>s+l.qty,0);
+    const water = cl.filter(l=>l.itemType==='Water').reduce((s,l)=>s+l.qty,0);
+    const other = cl.filter(l=>l.itemType==='Other').reduce((s,l)=>s+l.qty,0);
+    const daysWithEntries = new Set(cl.map(l=>l.date)).size;
+    const missedDays = Math.max(0, daysElapsed - daysWithEntries);
+    const missedClass = missedDays > 3 ? 'style="color:var(--red);font-weight:700"' : '';
+    return `<tr>
+      <td class="cage-cell">${esc(c.name)}</td>
+      <td><span class="animal-pill ${animalBadgeClass(c.animal)}">${esc(c.animal)}</span></td>
+      <td class="qty-cell">${Number(food.toFixed(2))}</td>
+      <td class="qty-cell">${Number(medicine.toFixed(2))}</td>
+      <td class="qty-cell">${Number(water.toFixed(2))}</td>
+      <td class="qty-cell">${Number(other.toFixed(2))}</td>
+      <td class="qty-cell" ${missedClass}>${missedDays}</td>
+    </tr>`;
+  });
+
+  // Totals row
+  rows.push(`<tr style="font-weight:700;background:#f8f9fb">
+    <td colspan="2">TOTAL</td>
+    <td class="qty-cell">${Number(totals[0].toFixed(2))}</td>
+    <td class="qty-cell">${Number(totals[1].toFixed(2))}</td>
+    <td class="qty-cell">${Number(totals[2].toFixed(2))}</td>
+    <td class="qty-cell">${Number(totals[3].toFixed(2))}</td>
+    <td></td>
+  </tr>`);
+
+  $('#reportBody').innerHTML = rows.join('');
+}
+
+function initReport(){
+  $('#btnPrint').addEventListener('click', ()=>{
+    // Ensure report panel is active for printing
+    window.print();
+  });
 }
 
 /* ================================================================
    INIT
    ================================================================ */
-seedData();
+if (!loadFromStorage()) {
+  seedData();
+  saveToStorage();
+}
 populateMonthSelector();
 initTabs();
 initLogForm();
 initHistoryFilters();
 initExport();
 initCageForm();
+initReport();
 renderAll();
 </script>
 </body>
