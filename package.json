@@ -1,0 +1,25 @@
+{
+  "name": "prayas-supply-tracker",
+  "version": "1.0.0",
+  "description": "Animal Shelter Supply Tracker — log and manage food, medicine, and supplies for shelter cages",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JaydeepBhandari/Prayas_Supply_Tracker.git"
+  },
+  "keywords": [
+    "animal-shelter",
+    "supply-tracker",
+    "prayas"
+  ],
+  "author": "Jaydeep Bhandari",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JaydeepBhandari/Prayas_Supply_Tracker/issues"
+  },
+  "homepage": "https://github.com/JaydeepBhandari/Prayas_Supply_Tracker#readme"
+}
