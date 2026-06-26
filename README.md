@@ -2,7 +2,7 @@
 
 A lightweight, browser-based supply management tool built for **Prayas Animal Shelter** to log, track, and manage food, medicine, and other supplies across shelter cages.
 
-> **Live Demo →** _[Add your Vercel link here]_
+> **Live Demo → prayas-supply-tracker.vercel.app
 
 ---
 
