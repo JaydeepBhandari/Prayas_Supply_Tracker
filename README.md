@@ -10,11 +10,12 @@ A lightweight, browser-based supply management tool built for **Prayas Animal Sh
 
 | Feature | Description |
 |---|---|
-| **📊 Dashboard** | At-a-glance metrics, active cages, total food logged. Features per-cage cards showing daily averages and a minimal low-stock warning system based on expected monthly food targets. |
-| **📝 Log Supply** | Quick form to record food, medicine, water, or other supplies. Features 1-click quick-log buttons and a "Duplicate Last Entry" helper for rapid data entry. |
+| **📊 Dashboard** | At-a-glance metrics, supply quantity breakdown bars (showing percentage totals by type), and ranked lists of top items supplied. Features per-cage cards showing daily averages and a minimal low-stock warning system. |
+| **📦 Available Stock** | Easily log current inventory (Food, Medicine, etc.) on hand. Displays directly on the dashboard with a clean visual breakdown of quantities and stock levels. |
+| **📝 Log Supply** | Fast, error-free logging using cascading dropdowns (Item Type → Category → Sub-category → Item) instead of text inputs. Features 1-click quick-log buttons for rapid data entry. |
 | **📋 History** | Filterable table of all entries for the selected month, with one-click delete. |
 | **🏠 Manage Cages** | Add, edit (inline), or remove cages. Track animal type, cage name, and expected monthly food (kg). |
-| **📈 Report** | A dedicated monthly summary tab showing overall item totals and a detailed per-cage breakdown. |
+| **📈 Report** | A dedicated monthly summary tab showing overall item totals and a detailed per-cage breakdown of items supplied. |
 | **⬇ Excel Export** | Download filtered supply history as a native `.xls` file for easy spreadsheet reporting. |
 | **💾 Local Storage** | All cage and log data is automatically persisted in your browser's local storage between sessions. |
 | **📅 Month Selector** | Browse data across the last 12 months with a single dropdown. |
